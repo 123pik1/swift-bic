@@ -8,15 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
-
 import lombok.Getter;
 import lombok.Setter;
 import pik.Exceptions.WrongSwiftCodeException;
 
 @Entity
 @Table(name = "Branch")
-public class BankBranch {
+public class BankBranch implements Storable{
 
 	@Getter
 	@Setter
@@ -62,6 +60,18 @@ public class BankBranch {
 
 	}
 
+	public BankBranch(String[] inputLine) //in order: Country ISO2 CODE, SWIFT CODE, CODE TYPE, NAME, ADDRESS, TOWN NAME, COUNTRY NAME, TIME ZONE
+	{
+		this.countryISO2 = inputLine[0];
+		this.swiftCode = inputLine[1];
+		//2 does not interes us
+		this.bankName = inputLine[2];
+		this.address = inputLine[3];
+		//4 does not interest us
+		this.countryName = inputLine[5];
+		//6 does not interest us
+	}
+
 	private boolean isHeadquarter(String swiftCode) {
 		if (swiftCode.length() >= 3) {
 			String last3Chars = swiftCode.substring(swiftCode.length() - 3);
@@ -72,5 +82,6 @@ public class BankBranch {
 		} else
 			throw new WrongSwiftCodeException();
 	}
+
 
 }
