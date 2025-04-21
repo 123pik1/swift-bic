@@ -12,6 +12,6 @@
         <property name="format_sql">true</property>
         <property name="hbm2ddl.auto">update </property>
         <property name="hibernate.archive.autodetection">class</property>
-        <mapping class="pik.BankBranch" />
+        <mapping class="pik.DB.Entities.BankBranch" />
     </session-factory>
 </hibernate-configuration>
