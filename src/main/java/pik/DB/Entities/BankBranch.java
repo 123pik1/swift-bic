@@ -95,7 +95,7 @@ public class BankBranch implements Storable{
 				+ ", branches=" + branches + "]";
 	}
 
-	private String toJsonString(boolean asBranch, int depth) {
+	public String toJsonString(boolean asBranch, int depth) {
 		/*
 		 * false when it is root
 		 * true when subBranch
@@ -108,7 +108,7 @@ public class BankBranch implements Storable{
         	jsonString += "\"countryName\": \"" + this.country.getName() + "\",";
         jsonString += "\"isHeadquarter\": " + this.isHeadquarter + ",";
         jsonString += "\"swiftCode\": \"" + this.swiftCode + "\"";
-		if (this.isHeadquarter && depth>0)
+		if (this.isHeadquarter && !asBranch && depth>0)
 		{
 			setBranches();
 			jsonString+=",";
@@ -117,16 +117,18 @@ public class BankBranch implements Storable{
 			for (BankBranch branch : branches)
 			{
 				if (!firstIter)
+				{
 					jsonString+=",";
-				jsonString+=branch.toJsonString(true, depth-1);
+					firstIter=!firstIter;
+				}
+				jsonString+=branch.toJsonString(true, 0);
 			}
 			jsonString+="]";
 		}
         jsonString += "}";
         return jsonString;
     }
-
 	public String toJsonString(boolean asBranch) {
-    return toJsonString(asBranch, 1); // Initial depth of 1
-}
+		return toJsonString(asBranch, 1);
+	}
 }
