@@ -22,17 +22,21 @@ public class Handler {
 
 	public Handler()
 	{
-		start();
-		System.out.println("blub");
 	}
 	public void  start()
 	{
+		try{
+            org.h2.tools.Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 		try
 		{
 			entityManagerFactory = Persistence.createEntityManagerFactory("swift-bic");
 			entityManager = entityManagerFactory.createEntityManager();
 		} catch (Throwable ex)
 		{
+			System.err.println("wth");
 			throw new ExceptionInInitializerError();
 		}
 	}
@@ -48,28 +52,26 @@ public class Handler {
 		{
 			transaction.begin();
 			for (Storable storable : entities) {
+				System.out.println(storable.toString());
 				entityManager.persist(storable);
 			}
 			transaction.commit();
 		}
 		catch (Exception e)
 		{
-			if (transaction.isActive())
-				transaction.rollback();
 			e.printStackTrace();
 		}
 	}
 
 	public void addObject(Storable entity)
 	{
+		System.out.println("adding object");
 		EntityTransaction transaction = entityManager.getTransaction();
 		try {
 			transaction.begin();
 			entityManager.persist(entity);
 			transaction.commit();
 		} catch (Exception e) {
-			if (transaction.isActive())
-				transaction.rollback();
 			e.printStackTrace();
 		}
 	}

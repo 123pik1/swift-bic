@@ -9,7 +9,8 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>pik.DB.Entities.BankBranch</class>
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:h2:./swift-bic-db" />
+            <!-- <property name="javax.persistence.jdbc.url" value="jdbc:h2:./DB/swift-bic-db" /> -->
+             <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1" />
             <property name="javax.persistence.jdbc.user" value="sa" />
             <property name="javax.persistence.jdbc.password" value="" />
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />

@@ -44,7 +44,7 @@ public class BankBranch implements Storable{
 	@Id
 	@Getter
 	@Setter
-	@Column(name = "Swift-code")
+	@Column(name = "Swiftcode")
 	String swiftCode;
 
 	@Transient
@@ -82,6 +82,14 @@ public class BankBranch implements Storable{
 		} else
 			throw new WrongSwiftCodeException();
 	}
+
+	@Override
+	public String toString() {
+		return "BankBranch [address=" + address + ", bankName=" + bankName + ", countryISO2=" + countryISO2
+				+ ", countryName=" + countryName + ", isHeadquarter=" + isHeadquarter + ", swiftCode=" + swiftCode
+				+ ", branches=" + branches + "]";
+	}
+
 
 
 }
