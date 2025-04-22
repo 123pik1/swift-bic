@@ -1,6 +1,7 @@
 package pik.Server;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,9 @@ public class Server implements Commanded{
 
 	private RestInterpreter interpreter;
 
+
+	private ApplicationContext appContext;
+
 	public Server() {}
 
 	public void startWithParser(String[] args)
@@ -51,7 +55,7 @@ public class Server implements Commanded{
         System.out.println("creation of new thread");
         commandListenerThread.setDaemon(true);
         commandListenerThread.start();
-		SpringApplication.run(RestInterpreter.class, args);
+		appContext = SpringApplication.run(RestInterpreter.class, args);
         while (running) {
             try {
                 Thread.sleep(100);
@@ -59,9 +63,7 @@ public class Server implements Commanded{
                 e.printStackTrace();
             }
         }
-        System.out.println("finishing");
-        commandListenerThread.interrupt();
-        dbHandler.close();
+        shutdown();
 	}
 	
 	
@@ -75,7 +77,13 @@ public class Server implements Commanded{
 	{}
 
 
-
+	private void shutdown()
+	{
+		System.out.println("finishing");
+		int exitCode = SpringApplication.exit(appContext, ()->0);
+        dbHandler.close();
+		System.exit(exitCode);
+	}
 	
 	
 }
