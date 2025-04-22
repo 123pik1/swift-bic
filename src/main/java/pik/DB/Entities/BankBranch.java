@@ -1,5 +1,6 @@
 package pik.DB.Entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import pik.Exceptions.WrongSwiftCodeException;
+import pik.Server.Server;
 
 @Entity
 @Table(name = "Branch")
@@ -72,7 +74,7 @@ public class BankBranch implements Storable{
 
 	private void setBranches()
 	{
-
+		branches = Server.getDbHandler().queries.getSubBranches(swiftCode.substring(0, 8));
 	}
 
 	private boolean isHeadquarter(String swiftCode) {
@@ -93,7 +95,7 @@ public class BankBranch implements Storable{
 				+ ", branches=" + branches + "]";
 	}
 
-	public String toJsonString(boolean asBranch) {
+	private String toJsonString(boolean asBranch, int depth) {
 		/*
 		 * false when it is root
 		 * true when subBranch
@@ -106,8 +108,9 @@ public class BankBranch implements Storable{
         	jsonString += "\"countryName\": \"" + this.country.getName() + "\",";
         jsonString += "\"isHeadquarter\": " + this.isHeadquarter + ",";
         jsonString += "\"swiftCode\": \"" + this.swiftCode + "\"";
-		if (this.isHeadquarter)
+		if (this.isHeadquarter && depth>0)
 		{
+			setBranches();
 			jsonString+=",";
 			jsonString+="\"branches\" : [";
 			boolean firstIter = true;
@@ -115,7 +118,7 @@ public class BankBranch implements Storable{
 			{
 				if (!firstIter)
 					jsonString+=",";
-				jsonString+=branch.toJsonString(true);
+				jsonString+=branch.toJsonString(true, depth-1);
 			}
 			jsonString+="]";
 		}
@@ -123,5 +126,7 @@ public class BankBranch implements Storable{
         return jsonString;
     }
 
-
+	public String toJsonString(boolean asBranch) {
+    return toJsonString(asBranch, 1); // Initial depth of 1
+}
 }

@@ -1,37 +1,37 @@
 package pik.Server;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.Getter;
 import lombok.Setter;
 import pik.DB.Handler;
 import pik.DB.Entities.Storable;
-import pik.DB_Parser.CsvParser;
+
 import pik.DB_Parser.TsvParser;
 import pik.Listener.CommandListener;
 import pik.Listener.Commanded;
+import pik.Server.RestApi.RestInterpreter;
 
-import java.util.List;
 import java.util.Set;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
-@RestController
-@RequestMapping("/v1/swift-codes")
 public class Server implements Commanded{
 
 
 	@Setter
     private boolean running = true;
 
+	@Getter
+	private static Handler dbHandler;
 
-	private Handler dbHandler;
+	private RestInterpreter interpreter;
 
 	public Server() {}
 
-	public void startWithParser()
+	public void startWithParser(String[] args)
 	{
 		TsvParser parser = new TsvParser("src/main/resources/Interns_2025_SWIFT_CODES - Sheet1.tsv");
         dbHandler = new Handler();
@@ -40,10 +40,10 @@ public class Server implements Commanded{
 		dbHandler.addObjects((Set<Storable>)(Set<?>)parser.parseToCountries());
         dbHandler.addObjects((Set<Storable>)(Set<?>)parser.parseToBankBranch()); //to Storable for adding objects in database
         System.out.println("inserted");
-		start();
+		start(args);
 	}
 
-	public void start()
+	public void start(String[] args)
 	{
         System.out.println("in start");
 		CommandListener commandListener = new CommandListener(this);
@@ -51,6 +51,7 @@ public class Server implements Commanded{
         System.out.println("creation of new thread");
         commandListenerThread.setDaemon(true);
         commandListenerThread.start();
+		SpringApplication.run(RestInterpreter.class, args);
         while (running) {
             try {
                 Thread.sleep(100);
@@ -67,7 +68,7 @@ public class Server implements Commanded{
 	
 	public static void main(String[] args) {
 		Server server = new Server();
-		server.startWithParser();
+		server.startWithParser(args);
 	}
 
 	public void serveCommand(String command)
@@ -75,15 +76,6 @@ public class Server implements Commanded{
 
 
 
-	//  ==== Spring sphere ====
-	@GetMapping("/{swiftCode}")
-	public String getBySwiftCode(@RequestParam String swiftCode) {
-		return dbHandler.queries.getBranchBySwiftCode(swiftCode).toJsonString(false);
-	}
-
-	@GetMapping("/country/{ISO2Code}")
-	public String getByIso2Code(@RequestParam String ISO2Code) {
-		return new String();
-	}
+	
 	
 }

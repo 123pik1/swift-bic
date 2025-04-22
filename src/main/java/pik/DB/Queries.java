@@ -1,5 +1,8 @@
 package pik.DB;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import javax.persistence.TypedQuery;
@@ -14,12 +17,19 @@ public class Queries {
 
 	public BankBranch getBranchBySwiftCode(String swiftCode)
 	{
-		TypedQuery<BankBranch> query = entityManager.createQuery("SELECT b FROM Branch b WHERE b.swiftCode = :swiftCode", BankBranch.class);
+		TypedQuery<BankBranch> query = entityManager.createQuery("SELECT b FROM BankBranch b WHERE b.swiftCode = :swiftCode", BankBranch.class);
 		query.setParameter("swiftCode", swiftCode);
 		BankBranch branch = query.getSingleResult();
 		System.out.println("gets branch by BIC");
 		return branch;
 	}
 
-	
+	public List<BankBranch> getSubBranches(String globalCode)
+	{
+		TypedQuery<BankBranch> query = entityManager.createQuery("SELECT b FROM BankBranch b WHERE SUBSTRING(b.swiftCode, 1, 8) = :globalCode", BankBranch.class);
+		query.setParameter("globalCode", globalCode);
+		List<BankBranch> res = query.getResultList();
+		System.out.println("gets subBranches");
+		return res;
+	}
 }
