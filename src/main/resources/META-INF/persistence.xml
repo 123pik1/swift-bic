@@ -8,6 +8,8 @@
     <persistence-unit name="swift-bic">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>pik.DB.Entities.BankBranch</class>
+        <class>pik.DB.Entities.Country</class>
+
         <properties>
             <!-- <property name="javax.persistence.jdbc.url" value="jdbc:h2:./DB/swift-bic-db" /> -->
              <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1" />
@@ -21,8 +23,8 @@
             initial setup, then "update" -->
 
             <!-- Show SQL queries -->
-            <property name="hibernate.show_sql" value="true" />
-            <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.show_sql" value="false" />
+            <property name="hibernate.format_sql" value="false" />
         </properties>
     </persistence-unit>
 </persistence>

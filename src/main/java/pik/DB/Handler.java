@@ -1,6 +1,7 @@
 package pik.DB;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -10,6 +11,7 @@ import javax.persistence.Persistence;
 import org.hibernate.cfg.Configuration;
 
 import lombok.Getter;
+import pik.DB.Entities.BankBranch;
 import pik.DB.Entities.Storable;
 
 public class Handler {
@@ -20,13 +22,19 @@ public class Handler {
 	@Getter
 	private EntityManager entityManager;
 
+	@Getter
+	private org.h2.tools.Server webServer;
+
+	public Queries queries;
+
 	public Handler()
 	{
+		start();
 	}
 	public void  start()
 	{
 		try{
-            org.h2.tools.Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
+            webServer = org.h2.tools.Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -34,9 +42,10 @@ public class Handler {
 		{
 			entityManagerFactory = Persistence.createEntityManagerFactory("swift-bic");
 			entityManager = entityManagerFactory.createEntityManager();
+			queries = new Queries(entityManager);
 		} catch (Throwable ex)
 		{
-			System.err.println("wth");
+			System.err.println("issue with initialization " + ex.getMessage());
 			throw new ExceptionInInitializerError();
 		}
 	}
@@ -45,7 +54,7 @@ public class Handler {
 
 
 
-	public void addObjects(List<Storable> entities)
+	public void addObjects(Set<Storable> entities)
 	{
 		EntityTransaction transaction = entityManager.getTransaction();
 		try 
@@ -65,7 +74,6 @@ public class Handler {
 
 	public void addObject(Storable entity)
 	{
-		System.out.println("adding object");
 		EntityTransaction transaction = entityManager.getTransaction();
 		try {
 			transaction.begin();
@@ -79,6 +87,7 @@ public class Handler {
 
 	public void close()
 	{
+		webServer.stop();
 		entityManager.close();
 		entityManagerFactory.close();
 	}

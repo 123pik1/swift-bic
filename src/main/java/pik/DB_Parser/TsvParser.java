@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CsvParser extends Parser{
+public class TsvParser extends Parser{
 
 
-	public CsvParser (String filePath)
+	public TsvParser (String filePath)
 	{
 		super(filePath);
 	}
@@ -24,8 +24,7 @@ public class CsvParser extends Parser{
 			line = reader.readLine();
 			while ((line = reader.readLine())!=null)
 			{
-				System.out.println(line);
-				String[] values = line.split(",");
+				String[] values = line.split("	");
 				records.add(values);
 			}
 

@@ -5,6 +5,8 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -28,13 +30,10 @@ public class BankBranch implements Storable{
 
 	@Getter
 	@Setter
-	@Column(name = "CountryISO2")
-	String countryISO2;
+	@ManyToOne
+	Country country;
 
-	@Getter
-	@Setter
-	@Column(name = "CountryName")
-	String countryName;
+	
 
 	@Getter
 	@Setter
@@ -50,26 +49,30 @@ public class BankBranch implements Storable{
 	@Transient
 	List<BankBranch> branches;
 
-	public BankBranch(String address, String bankName, String countryISO2, String countryName, String swiftCode) {
+	public BankBranch(String address, String bankName, Country country, String swiftCode) {
 		this.address = address;
 		this.bankName = bankName;
-		this.countryISO2 = countryISO2;
-		this.countryName = countryName;
+		this.country = country;
 		this.swiftCode = swiftCode;
 		this.isHeadquarter = isHeadquarter(swiftCode);
-
+		if (this.isHeadquarter)
+			setBranches();
 	}
 
 	public BankBranch(String[] inputLine) //in order: Country ISO2 CODE, SWIFT CODE, CODE TYPE, NAME, ADDRESS, TOWN NAME, COUNTRY NAME, TIME ZONE
 	{
-		this.countryISO2 = inputLine[0];
 		this.swiftCode = inputLine[1];
 		//2 does not interes us
 		this.bankName = inputLine[2];
 		this.address = inputLine[3];
 		//4 does not interest us
-		this.countryName = inputLine[5];
 		//6 does not interest us
+		this.isHeadquarter = isHeadquarter(this.swiftCode);
+	}
+
+	private void setBranches()
+	{
+
 	}
 
 	private boolean isHeadquarter(String swiftCode) {
@@ -85,11 +88,40 @@ public class BankBranch implements Storable{
 
 	@Override
 	public String toString() {
-		return "BankBranch [address=" + address + ", bankName=" + bankName + ", countryISO2=" + countryISO2
-				+ ", countryName=" + countryName + ", isHeadquarter=" + isHeadquarter + ", swiftCode=" + swiftCode
+		return "BankBranch [address=" + address + ", bankName=" + bankName + ", countryISO2=" + country.getISO2()
+				+ ", countryName=" + country.getName() + ", isHeadquarter=" + isHeadquarter + ", swiftCode=" + swiftCode
 				+ ", branches=" + branches + "]";
 	}
 
+	public String toJsonString(boolean asBranch) {
+		/*
+		 * false when it is root
+		 * true when subBranch
+		 */
+        String jsonString = "{";
+        jsonString += "\"address\": \"" + this.address + "\",";
+        jsonString += "\"bankName\": \"" + this.bankName + "\",";
+        jsonString += "\"countryISO2\": \"" + this.country.getISO2() + "\",";
+		if (!asBranch)
+        	jsonString += "\"countryName\": \"" + this.country.getName() + "\",";
+        jsonString += "\"isHeadquarter\": " + this.isHeadquarter + ",";
+        jsonString += "\"swiftCode\": \"" + this.swiftCode + "\"";
+		if (this.isHeadquarter)
+		{
+			jsonString+=",";
+			jsonString+="\"branches\" : [";
+			boolean firstIter = true;
+			for (BankBranch branch : branches)
+			{
+				if (!firstIter)
+					jsonString+=",";
+				jsonString+=branch.toJsonString(true);
+			}
+			jsonString+="]";
+		}
+        jsonString += "}";
+        return jsonString;
+    }
 
 
 }
