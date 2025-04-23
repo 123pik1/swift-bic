@@ -37,6 +37,9 @@ public class Server implements Commanded{
 
 	public void startWithParser(String[] args)
 	{
+		/*
+		 * Parses and adds to database starting records
+		 */
 		TsvParser parser = new TsvParser("src/main/resources/Interns_2025_SWIFT_CODES - Sheet1.tsv");
         dbHandler = new Handler();
         dbHandler.start();
@@ -49,6 +52,9 @@ public class Server implements Commanded{
 
 	public void start(String[] args)
 	{
+		/*
+		 * starts mainloop and command listener
+		 */
         System.out.println("in start");
 		CommandListener commandListener = new CommandListener(this);
         Thread commandListenerThread = new Thread(commandListener);

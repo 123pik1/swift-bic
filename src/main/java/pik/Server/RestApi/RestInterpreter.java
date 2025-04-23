@@ -52,7 +52,7 @@ public class RestInterpreter {
 	@GetMapping("/country/{ISO2Code}")
 	public ResponseEntity<String> getByIso2Code(@PathVariable String ISO2Code) {
 		try{
-			String response = "";
+			String response = "{";
 		Country country = Server.getDbHandler().queries.getCountryByISO2(ISO2Code);
 		List<BankBranch> branches = Server.getDbHandler().queries.getBranchesFromCountry(country);
 		response += "\"countryISO2\": \""+country.getISO2()+"\"";
@@ -67,7 +67,7 @@ public class RestInterpreter {
 			}
 			response += bankBranch.toJsonString(true, 0);
 		}
-		response+="]";
+		response+="]}";
 		return new ResponseEntity<>(response, HttpStatus.OK);
 		}
 		catch (NoCountryInDbException e)
@@ -84,7 +84,7 @@ public class RestInterpreter {
 		}
 	}
 
-	@PostMapping("/")
+	@PostMapping("")
 	public ResponseEntity<String> insertBranch(@RequestBody String entity) {
 		try
 		{
@@ -112,16 +112,16 @@ public class RestInterpreter {
 			System.out.println("after adding country");
 			System.out.println("Received BankBranch: " + branch);
 			Server.getDbHandler().addObject(branch);
-			return new ResponseEntity<>("BankBranch received and processed", HttpStatus.OK);
+			return new ResponseEntity<>("{ \"message\":\"BankBranch received and processed\"}", HttpStatus.OK);
 		}
 		catch (ObjectAlreadyInDBException e)
 		{
-            return new ResponseEntity<>("Object is already in database", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("{ \"message\":\"Object is already in database\"}", HttpStatus.BAD_REQUEST);
 		}
 		catch (Exception e)
 		{
 			System.err.println("Error processing JSON: " + e.getMessage());
-            return new ResponseEntity<>("Error processing JSON", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("{ \"message\":\"Error processing JSON\"}", HttpStatus.BAD_REQUEST);
 		}
 	}
 	
@@ -131,17 +131,17 @@ public class RestInterpreter {
 		try {
 			BankBranch branch = Server.getDbHandler().queries.getBranchBySwiftCode(swiftCode);
 			Server.getDbHandler().deleteObject(branch);
-			return new ResponseEntity<>("Branch deleted", HttpStatus.OK);
+			return new ResponseEntity<>("{ \"message\":\"Branch deleted\"}", HttpStatus.OK);
 		} catch (NoSwiftCodeInDBException e) {
-			return new ResponseEntity<>("There wasn't any branch with this swiftcode", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("{ \"message\":\"There wasn't any branch with this swiftcode\"}", HttpStatus.BAD_REQUEST);
 		}
 		catch (NotDeletedObjectException e)
 		{
-			return new ResponseEntity<>("You can't delete object from database", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("{ \"message\":\"You can't delete object from database\"}", HttpStatus.BAD_REQUEST);
 		}
 		catch (Exception e)
 		{
-			return new ResponseEntity<>("There was a problem with request", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("{ \"message\":\"There was a problem with request\"}", HttpStatus.BAD_REQUEST);
 		}
 	}
 }

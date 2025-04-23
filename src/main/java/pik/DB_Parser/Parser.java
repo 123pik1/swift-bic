@@ -22,7 +22,7 @@ public abstract class Parser {
 		List<String[]> fromFile = parseFile(); //gets values from file
 		for (String[] record : fromFile)
 		{
-			result.add(new BankBranch(record[4], record[3], new Country(record[0], record[6]),record[1]));
+			result.add(new BankBranch(record[4], record[3], new Country(record[0], record[6]),record[1])); //creates branch
 		}
 		
 		return result;
@@ -34,8 +34,7 @@ public abstract class Parser {
 		List<String[]> fromFile = parseFile();
 		for (String[] record : fromFile)
 		{
-			// System.out.println(record[6]);
-			Country country = new Country(record[0], record[6]);
+			Country country = new Country(record[0], record[6]); //create country from ISO2 code and country name
 			if (!result.contains(country)) {
 				result.add(country);
 			}

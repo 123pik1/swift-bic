@@ -55,6 +55,9 @@ public class Handler {
 
 	public void addObjects(Set<Storable> entities)
 	{
+		/*
+		 * add multiple entities
+		 */
 		EntityTransaction transaction = entityManager.getTransaction();
 		try 
 		{
@@ -76,6 +79,9 @@ public class Handler {
 
 	public void addObject(Storable entity)
 	{
+		/*
+		 * adds entity
+		 */
 		EntityTransaction transaction = entityManager.getTransaction();
 		try {
 			transaction.begin();
@@ -99,6 +105,9 @@ public class Handler {
 
 	public void deleteObject(Storable entity)
 	{
+		/*
+		 * deletes object from database
+		 */
 		System.out.println("in deletion");
 		EntityTransaction transaction = entityManager.getTransaction();
 		try {

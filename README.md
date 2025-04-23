@@ -51,13 +51,10 @@ git clone https://github.com/123pik1/swift-bic.git
     mvn -q exec:java -Dexec.mainClass="pik.Server.Server"
     ```
 
-4. The server will start on the default port (e.g., `http://localhost:8080`).
+4. The server will start on port 8080
 
 ## Additional Notes
 
-- To stop server input `exit` command in the server's or client's terminal
+- To stop server input `exit` command in the server's  terminal
 - To customize the server port or other configurations, edit the `application.properties` file located in the `src/main/resources` directory.
 - For troubleshooting, check the logs in the terminal or refer to the `logs` directory if configured.
-
-
-Enjoy using the SWIFT-BIC server!  

@@ -24,7 +24,7 @@ public class TsvParser extends Parser{
 			line = reader.readLine();
 			while ((line = reader.readLine())!=null)
 			{
-				String[] values = line.split("	");
+				String[] values = line.split("	"); //splits by tabulators (.tsv file)
 				records.add(values);
 			}
 

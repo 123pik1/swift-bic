@@ -57,17 +57,6 @@ public class BankBranch implements Storable{
 			setBranches();
 	}
 
-	// public BankBranch(String[] inputLine) //in order: Country ISO2 CODE, SWIFT CODE, CODE TYPE, NAME, ADDRESS, TOWN NAME, COUNTRY NAME, TIME ZONE
-	// {
-	// 	this.swiftCode = inputLine[1];
-	// 	//2 does not interes us
-	// 	this.bankName = inputLine[2];
-	// 	this.address = inputLine[3];
-	// 	//4 does not interest us
-	// 	//6 does not interest us
-	// 	this.isHeadquarter = isHeadquarter(this.swiftCode);
-	// }
-
 	private void setBranches()
 	{
 		branches = Server.getDbHandler().queries.getSubBranches(swiftCode.substring(0, 8));

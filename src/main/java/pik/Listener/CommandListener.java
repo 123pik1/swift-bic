@@ -15,6 +15,9 @@ public class CommandListener implements Runnable{
 
 	@Override
 	public void run() {
+		/*
+		 * command listener is waiting for commands
+		 */
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("commandListener started");
 		try {
