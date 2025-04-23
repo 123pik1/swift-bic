@@ -16,7 +16,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pik.DB.Entities.BankBranch;
 import pik.DB.Entities.Country;
+import pik.Exceptions.NoBranchesInCountryException;
+import pik.Exceptions.NoCountryInDbException;
 import pik.Exceptions.NoSwiftCodeInDBException;
+import pik.Exceptions.NotDeletedObjectException;
+import pik.Exceptions.ObjectAlreadyInDBException;
 import pik.Server.Server;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,14 +34,25 @@ public class RestInterpreter {
 
 	//  ==== Spring sphere ====
 	@GetMapping("/{swiftCode}")
-	public String getBySwiftCode(@PathVariable String swiftCode) {
-		BankBranch branch = Server.getDbHandler().queries.getBranchBySwiftCode(swiftCode);
-		return branch.toJsonString(false);
+	public ResponseEntity<String> getBySwiftCode(@PathVariable String swiftCode) {
+		try{
+			BankBranch branch = Server.getDbHandler().queries.getBranchBySwiftCode(swiftCode);
+			return new ResponseEntity<>((branch.toJsonString(false)), HttpStatus.OK);
+		}
+		catch (NoSwiftCodeInDBException e)
+		{
+			return new ResponseEntity<>("There was no swiftCode found in database", HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e)
+		{
+			return new ResponseEntity<>("There was a problem with request", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@GetMapping("/country/{ISO2Code}")
-	public String getByIso2Code(@PathVariable String ISO2Code) {
-		String response = "{";
+	public ResponseEntity<String> getByIso2Code(@PathVariable String ISO2Code) {
+		try{
+			String response = "";
 		Country country = Server.getDbHandler().queries.getCountryByISO2(ISO2Code);
 		List<BankBranch> branches = Server.getDbHandler().queries.getBranchesFromCountry(country);
 		response += "\"countryISO2\": \""+country.getISO2()+"\"";
@@ -52,8 +67,21 @@ public class RestInterpreter {
 			}
 			response += bankBranch.toJsonString(true, 0);
 		}
-		response+="]\n}";
-		return response;
+		response+="]";
+		return new ResponseEntity<>(response, HttpStatus.OK);
+		}
+		catch (NoCountryInDbException e)
+		{
+			return new ResponseEntity<>("No country found in database by this ISO2 code", HttpStatus.BAD_REQUEST);
+		}
+		catch (NoBranchesInCountryException e)
+		{
+			return new ResponseEntity<>("No branches found in this country", HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e)
+		{
+			return new ResponseEntity<>("There was a problem with request", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@PostMapping("/")
@@ -72,7 +100,11 @@ public class RestInterpreter {
 			Country country = new Country(countryISO2, countryName);
 			BankBranch branch = new BankBranch(address, bankName, country , swiftCode);
 			System.out.println("after processing");
-			if (Server.getDbHandler().queries.getCountryByISO2(countryISO2)==null)
+			try 
+			{
+				Server.getDbHandler().queries.getCountryByISO2(countryISO2); //check if there is country in DB
+			}
+			catch (NoCountryInDbException e)
 			{
 				System.out.println("country not found");
 				Server.getDbHandler().addObject(country);
@@ -81,6 +113,10 @@ public class RestInterpreter {
 			System.out.println("Received BankBranch: " + branch);
 			Server.getDbHandler().addObject(branch);
 			return new ResponseEntity<>("BankBranch received and processed", HttpStatus.OK);
+		}
+		catch (ObjectAlreadyInDBException e)
+		{
+            return new ResponseEntity<>("Object is already in database", HttpStatus.BAD_REQUEST);
 		}
 		catch (Exception e)
 		{
@@ -96,8 +132,16 @@ public class RestInterpreter {
 			BankBranch branch = Server.getDbHandler().queries.getBranchBySwiftCode(swiftCode);
 			Server.getDbHandler().deleteObject(branch);
 			return new ResponseEntity<>("Branch deleted", HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>("Problem with deleting branch", HttpStatus.BAD_REQUEST);
+		} catch (NoSwiftCodeInDBException e) {
+			return new ResponseEntity<>("There wasn't any branch with this swiftcode", HttpStatus.BAD_REQUEST);
+		}
+		catch (NotDeletedObjectException e)
+		{
+			return new ResponseEntity<>("You can't delete object from database", HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e)
+		{
+			return new ResponseEntity<>("There was a problem with request", HttpStatus.BAD_REQUEST);
 		}
 	}
 }

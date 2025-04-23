@@ -12,8 +12,14 @@ public class Client implements Commanded {
 
 	@Override
 	public void serveCommand(String command) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'serveCommand'");
+		switch (command) {
+			case "1":
+				
+				break;
+		
+			default:
+				break;
+		}
 	}
 	
 }

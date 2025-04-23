@@ -8,6 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import pik.DB.Entities.BankBranch;
 import pik.DB.Entities.Country;
+import pik.Exceptions.NoBranchesInCountryException;
+import pik.Exceptions.NoCountryInDbException;
 import pik.Exceptions.NoSwiftCodeInDBException;
 
 public class Queries {
@@ -38,7 +40,7 @@ public class Queries {
 		System.out.println("gets subBranches");
 		return res;
 		} catch (Exception e)
-		{return null;}
+		{throw new NoSwiftCodeInDBException();}
 	}
 
 	public List<BankBranch> getBranchesFromCountry(Country country)
@@ -50,7 +52,7 @@ public class Queries {
 		System.out.println("gets from country");
 		return res;
 		} catch (Exception e)
-		{return null;}
+		{throw new NoBranchesInCountryException();}
 	}
 	public Country getCountryByISO2 (String ISO2Code)
 	{
@@ -63,7 +65,7 @@ public class Queries {
 
 			return country;
 		} catch (Exception e) {
-			return null;
+			throw new NoCountryInDbException();
 		}
 		
 	}

@@ -1,6 +1,5 @@
 package pik.DB;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -8,12 +7,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-import org.hibernate.cfg.Configuration;
-
 import lombok.Getter;
-import pik.DB.Entities.BankBranch;
 import pik.DB.Entities.Storable;
-import pik.Exceptions.ObjectAlreadyInDB;
+import pik.Exceptions.NotDeletedObjectException;
+import pik.Exceptions.ObjectAlreadyInDBException;
 
 public class Handler {
 
@@ -88,7 +85,7 @@ public class Handler {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
-			throw new ObjectAlreadyInDB();
+			throw new ObjectAlreadyInDBException();
 		}
 	}
 
@@ -113,6 +110,7 @@ public class Handler {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
+			throw new NotDeletedObjectException();
 		}
 	}
 }
