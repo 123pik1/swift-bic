@@ -84,6 +84,4 @@ public class Server implements Commanded{
         dbHandler.close();
 		System.exit(exitCode);
 	}
-	
-	
 }

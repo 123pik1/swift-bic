@@ -12,6 +12,10 @@ public class CommandListener implements Runnable{
 		this.commanded = commanded;
 	}
 
+	/*
+	Command structure:
+	<command> <arguments>
+	*/
 
 	@Override
 	public void run() {
